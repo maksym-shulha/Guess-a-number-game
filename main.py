@@ -82,7 +82,7 @@ def leader():
         with open("leaderboard.csv", "r+", encoding="UTF8", newline='') as f:
 
             csv_reader = csv.reader(f, delimiter=' ')
-            csv_reader = sorted(csv_reader, key=operator.itemgetter(1))
+            csv_reader = sorted(csv_reader, key=operator.itemgetter(1, 2))
             try:
                 for i in range(7):
                     score += "          ".join(csv_reader[i]) + "\n"
@@ -136,39 +136,9 @@ def main():
                 main()
             elif menu_button.process():
                 menu()
-            elif event.type == pg.KEYDOWN:
-                if event.key == pg.K_RETURN and attempt <= 7 and entered != secret:
+            elif (event.type == pg.KEYDOWN and event.key == pg.K_RETURN) or acc_button.process():
+                if attempt <= 7 and entered != secret:
                     entered = input_box.text
-                    try:
-                        entered = int(entered)
-                        nums.append(entered)
-                    except ValueError:
-                        text = "Enter correct number"
-                        continue
-                    input_box.text = ''
-                    if secret > entered:
-                        text = "Secret number is bigger"
-                    elif secret < entered:
-                        text = "Secret number is less"
-                    elif secret == entered:
-                        counter = counter
-                        text = f"You have guessed the correct number ({secret})!!!"
-                        text_res = "Press \'Reset\' to try again"
-                        data = [login, attempt, counter]
-                        with open("leaderboard.csv", "a", encoding="UTF8", newline='') as f:
-                            writer = csv.writer(f, delimiter=" ")
-                            writer.writerow(data)
-                        attempt += 1
-                        break
-                    if attempt == 7:
-                        text = "You are out of attempts"
-                        text_res = "Press \'Reset\' to try again"
-                        attempt += 1
-                        break
-                    else:
-                        attempt += 1
-            elif acc_button.process() and attempt <= 7 and entered != secret:
-                entered = input_box.text
                 try:
                     entered = int(entered)
                     nums.append(entered)
@@ -181,7 +151,6 @@ def main():
                 elif secret < entered:
                     text = "Secret number is less"
                 elif secret == entered:
-                    counter = counter
                     text = f"You have guessed the correct number ({secret})!!!"
                     text_res = "Press \'Reset\' to try again"
                     data = [login, attempt, counter]
